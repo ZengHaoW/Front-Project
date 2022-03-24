@@ -11,15 +11,26 @@
             </li>
           </ul>
           <ul class="fl sui-tag">
-            <li class="with-x">手机</li>
-            <li class="with-x">iphone<i>×</i></li>
-            <li class="with-x">华为<i>×</i></li>
-            <li class="with-x">OPPO<i>×</i></li>
+<!--            分类面包屑-->
+            <li class="with-x" v-if="searchParams.categoryName">
+              {{searchParams.categoryName}}
+              <i @click="removeCategoryName">x</i>
+            </li>
+<!--            关键字面包屑-->
+            <li class="with-x" v-if="searchParams.keyword">
+              {{searchParams.keyword}}
+              <i @click="removeKeyName">x</i>
+            </li>
+<!--            品牌面包屑-->
+            <li class="with-x" v-if="searchParams.trademark">
+              {{searchParams.trademark.split(":")[1]}}
+              <i @click="removeTradeMark">x</i>
+            </li>
           </ul>
         </div>
 
         <!--selector-->
-        <SearchSelector />
+        <SearchSelector @trademarkInfo="trademarkInfo"/>
 
         <!--details-->
         <div class="details clearfix">
@@ -161,6 +172,41 @@
     methods: {
       getData() {
         this.$store.dispatch("search/getSearchList", this.searchParams)
+      },
+      removeCategoryName() {
+        this.searchParams.categoryName = undefined
+        this.searchParams.category1Id = undefined
+        this.searchParams.category2Id = undefined
+        this.searchParams.category3Id = undefined
+        this.getData()
+        if (this.$route.params){
+          this.$router.push({name: 'search'})
+        }
+      },
+      removeKeyName() {
+        this.searchParams.keyword = undefined
+        this.getData()
+        this.$bus.$emit("clear")
+      },
+      removeTradeMark() {
+        this.searchParams.trademark = undefined
+        this.getData()
+      },
+      trademarkInfo(trademark) {
+        // console.log(trademark)
+        this.searchParams.trademark = `${trademark.tmId}:${trademark.tmName}`
+        this.getData()
+      }
+    },
+    watch: {
+      $route() {
+        this.searchParams.keyword = this.$route.params.keyWord
+        Object.assign(this.searchParams, this.$route.query)
+        this.getData()
+        //存疑？
+        this.searchParams.category1Id = ""
+        this.searchParams.category2Id = ""
+        this.searchParams.category3Id = ""
       }
     }
   }
