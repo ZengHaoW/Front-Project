@@ -26,34 +26,38 @@
               {{searchParams.trademark.split(":")[1]}}
               <i @click="removeTradeMark">x</i>
             </li>
+<!--            平台售卖属性值-->
+            <li class="with-x" v-for="(attrVaule, index) in searchParams.props" :key="index">
+              {{attrVaule.split(":")[1]}}
+              <i @click="removeAttr(index)">x</i>
+            </li>
           </ul>
         </div>
 
         <!--selector-->
-        <SearchSelector @trademarkInfo="trademarkInfo"/>
+        <SearchSelector
+            @trademarkInfo="trademarkInfo"
+            @attrInfo="attrInfo"
+        />
 
         <!--details-->
         <div class="details clearfix">
           <div class="sui-navbar">
             <div class="navbar-inner filter">
               <ul class="sui-nav">
-                <li class="active">
-                  <a href="#">综合</a>
+                <li :class="{active: isOne}" @click="changeOrder('1')">
+                  <a>综合
+                    <span v-show=isOne class="iconfont"
+                          :class="{'icon-UP': isAsc, 'icon-DOWN': isDesc}">
+                    </span>
+                  </a>
                 </li>
-                <li>
-                  <a href="#">销量</a>
-                </li>
-                <li>
-                  <a href="#">新品</a>
-                </li>
-                <li>
-                  <a href="#">评价</a>
-                </li>
-                <li>
-                  <a href="#">价格⬆</a>
-                </li>
-                <li>
-                  <a href="#">价格⬇</a>
+                <li :class="{active: isTwo}" @click="changeOrder('2')">
+                  <a>价格
+                    <span v-show=isTwo class="iconfont"
+                          :class="{'icon-UP': isAsc, 'icon-DOWN': isDesc}">
+                    </span>
+                  </a>
                 </li>
               </ul>
             </div>
@@ -92,35 +96,9 @@
             </ul>
           </div>
 <!--          分页器-->
-          <div class="fr page">
-            <div class="sui-pagination clearfix">
-              <ul>
-                <li class="prev disabled">
-                  <a href="#">«上一页</a>
-                </li>
-                <li class="active">
-                  <a href="#">1</a>
-                </li>
-                <li>
-                  <a href="#">2</a>
-                </li>
-                <li>
-                  <a href="#">3</a>
-                </li>
-                <li>
-                  <a href="#">4</a>
-                </li>
-                <li>
-                  <a href="#">5</a>
-                </li>
-                <li class="dotted"><span>...</span></li>
-                <li class="next">
-                  <a href="#">下一页»</a>
-                </li>
-              </ul>
-              <div><span>共10页&nbsp;</span></div>
-            </div>
-          </div>
+          <Pagination :pageNo="searchParams.pageNo"
+                      :pageSize="searchParams.pageSize" :total="total"
+                      :continues="5" @getPageNo="getPageNo"/>
         </div>
       </div>
     </div>
@@ -144,7 +122,7 @@
           category3Id: "",
           categoryName: "",
           keyword: "",
-          order: "",
+          order: "2:asc",
           pageNo: 1,
           pageSize: 10,
           props: [],
@@ -167,7 +145,22 @@
       this.getData()
     },
     computed: {
-      ...mapGetters('search',['goodsList'])
+      ...mapGetters('search',['goodsList']),
+      ...mapState({
+        total: state => state.search.searchList.total
+      }),
+      isOne() {
+        return this.searchParams.order.indexOf('1') !== -1
+      },
+      isTwo() {
+        return this.searchParams.order.indexOf('2') !== -1
+      },
+      isDesc() {
+        return this.searchParams.order.indexOf('desc') !== -1
+      },
+      isAsc() {
+        return this.searchParams.order.indexOf('asc') !== -1
+      }
     },
     methods: {
       getData() {
@@ -195,6 +188,44 @@
       trademarkInfo(trademark) {
         // console.log(trademark)
         this.searchParams.trademark = `${trademark.tmId}:${trademark.tmName}`
+        this.getData()
+      },
+      attrInfo(attr, attrValue) {
+        // console.log(attr, attrValue)
+        let props = `${attr.attrId}:${attrValue}:${attr.attrName}`
+        if (this.searchParams.props.indexOf(props) === -1) {
+          this.searchParams.props.push(props)
+          this.getData()
+        }
+      },
+      removeAttr(index) {
+        // console.log(this.searchParams.props)
+        this.searchParams.props.splice(index, 1)
+        // console.log(this.searchParams.props)
+        this.getData()
+      },
+      changeOrder(flag) {
+        //flag:用户每一次点击li标签的时候，用于区分是综合（1）还是价格（2）
+        //现获取order初始状态【咱们需要通过初始状态去判断接下来做什么】
+        let originOrder = this.searchParams.order;
+        let orginsFlag = originOrder.split(":")[0];
+        let originSort = originOrder.split(":")[1];
+        //新的排序方式
+        let newOrder = "";
+        //判断的是多次点击的是不是同一个按钮
+        if (flag === orginsFlag) {
+          newOrder = `${orginsFlag}:${originSort === "desc" ? "asc" : "desc"}`;
+        } else {
+          //点击不是同一个按钮
+          newOrder = `${flag}:${"desc"}`;
+        }
+        //需要给order重新赋值
+        this.searchParams.order = newOrder;
+        //再次发请求
+        this.getData();
+      },
+      getPageNo(pageNo) {
+        this.searchParams.pageNo = pageNo
         this.getData()
       }
     },
