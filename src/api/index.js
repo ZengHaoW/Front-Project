@@ -14,3 +14,10 @@ export const reqBannerList= () => mockRequests(
 export const reqFloorList= () => mockRequests(
     {url: '/floor', method: 'get'}
 )
+//params至少是一个空对象
+export const reqGetSearchInfo = (params) => requests({
+    url: '/list',
+    method: 'post',
+    data: params
+})
+

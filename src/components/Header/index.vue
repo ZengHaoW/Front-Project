@@ -71,8 +71,10 @@ export default {
         let location = {name: 'search',
           params: {
             keyWord: this.keyWord || undefined
-          }}
+          }
+        }
         location.query = this.$route.query
+        // console.log(location)
         this.$router.push(location)
       }
     }
