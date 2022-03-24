@@ -22,3 +22,4 @@ pnpm-debug.log*
 *.sln
 *.sw?
 /静态页面/
+/静态组件/

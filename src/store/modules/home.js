@@ -16,7 +16,7 @@ export default {
         },
         async getBannerList({commit}) {
             let result = await reqBannerList()
-            console.log(result)
+            // console.log(result)
             if (result.code === 200) {
                 commit('BANNERLIST', result.data)
 
@@ -24,7 +24,7 @@ export default {
         },
         async getFloorList({commit}) {
             let result = await reqFloorList()
-            console.log(result)
+            // console.log(result)
             if (result.code === 200) {
                 commit('FLOORLIST', result.data)
 

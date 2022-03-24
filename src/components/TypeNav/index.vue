@@ -109,7 +109,7 @@ export default {
         }
 
         location.query = query
-        console.log(location)
+        // console.log(location)
         this.$router.push(location)
       }
     },
