@@ -9,9 +9,16 @@ import Home from '@/pages/Home'
 import Login from '@/pages/Login'
 import Register from '@/pages/Register'
 import Search from '@/pages/Search'
+import Detail from "@/pages/Detail";
 export default new VueRouter({
     //配置路由
     routes: [
+        {
+            name: 'detail',
+            path: '/detail/:skuid',
+            component: Detail,
+            meta: {isShow: false}
+        },
         {
 
             path: '/home',

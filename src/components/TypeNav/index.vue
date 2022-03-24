@@ -65,9 +65,10 @@ export default {
     //通知vuex发请求，获取数据，存储于仓库中
 
     // console.log(this.$store)
-    if (this.$route.name === 'search') {
+    if (this.$route.name === 'search' || 'detail') {
       this.show = false
     }
+
   },
   computed: {
     ...mapState({
@@ -84,7 +85,7 @@ export default {
     }, 50,),
     leaveIndex() {
       this.currentIndex = -1
-      if (this.$route.name === 'search') {
+      if (this.$route.name === 'search' || 'detail') {
         this.show = false
       }
     },
