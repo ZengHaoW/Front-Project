@@ -29,6 +29,33 @@ export default {
                 return Promise.reject(new Error("faile"));
             }
         },
+        //删除全部勾选商品
+        deleteAllCheckedCart({dispatch, getters}) {
+            //context: 小仓库, commit, state都有
+            // console.log(context)
+            //获取购物车中全部的产品
+            let PormiseAll = []
+            getters.cartList.cartInfoList.forEach(item => {
+                let promise = item.isChecked === 1? dispatch('deleteCartById', item.skuId): ""
+                PormiseAll.push(promise)
+            })
+
+            return Promise.all(PormiseAll)
+        },
+        updateAllCartIsChecked({dispatch, state}, isChecked) {
+            // console.log(state)
+            // console.log(isChecked)
+            let promiseAll = []
+            state.cartList[0].cartInfoList.forEach(item => {
+                let promise = dispatch("updateCheckedById", {
+                    skuId: item.skuId,
+                    isChecked,
+                })
+                promiseAll.push(promise)
+            })
+            return Promise.all(promiseAll)
+        }
+
 
     },
     mutations: {
