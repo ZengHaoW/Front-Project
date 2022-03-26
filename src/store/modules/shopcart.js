@@ -6,17 +6,28 @@ export default {
     actions: {
         async getCartList({commit}) {
             let result = await reqCartList()
-            console.log(result)
-            // if (result.code === 200) {
-            //     commit('GETSEARCHLIST', result.data)
-            // }
+            // console.log(result)
+            if (result.code === 200) {
+                commit('GETCARTLIST', result.data)
+            }
         }
 
     },
     mutations: {
+        GETCARTLIST(state, cartList) {
+            state.cartList = cartList
+        }
     },
     state: {
+        cartList: []
     },
     //简化仓库数据
-    getters: {}
+    getters: {
+        cartList(state) {
+            return state.cartList[0] || {}
+        },
+        // cartInfoLlist(state) {
+        //     return state
+        // }
+    }
 }
