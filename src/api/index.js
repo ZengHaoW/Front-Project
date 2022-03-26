@@ -26,3 +26,12 @@ export const reqGoodsInfo = (skuId) => requests({
     method: 'get',
 })
 
+export const reqAddOrUpdateShopCart = (skuId, skuNum) => requests({
+    url: `/cart/addToCart/${skuId}/${skuNum}`,
+    method: 'post'
+})
+
+export const reqCartList = () => requests({
+    url: '/cart/cartList',
+    methods: 'get'
+})

@@ -76,12 +76,13 @@
             </div>
             <div class="cartWrap">
               <div class="controls">
-                <input autocomplete="off" class="itxt">
-                <a href="javascript:" class="plus">+</a>
-                <a href="javascript:" class="mins">-</a>
+                <input autocomplete="off" class="itxt" v-model="skuNum" @change="changeSkuNum">
+                <a href="javascript:" class="plus" @click="skuNum++">+</a>
+                <a href="javascript:" class="mins" @click="skuNum > 1? skuNum--: skuNum = 1">-</a>
               </div>
               <div class="add">
-                <a href="javascript:">加入购物车</a>
+<!--                再路由跳转之前,发请求,把你购买的产品信息通过请求的形式通知服务器,再服务器进行相应的存储-->
+                <a @click="addShopCar">加入购物车</a>
               </div>
             </div>
           </div>
@@ -338,7 +339,11 @@
 
   export default {
     name: 'Detail',
-    
+    data() {
+      return {
+        skuNum: 10
+      }
+    },
     components: {
       ImageList,
       Zoom
@@ -359,6 +364,32 @@
           item.isChecked = '0'
         })
         saleAttrValue.isChecked = '1'
+      },
+      //修改产品个数
+      changeSkuNum(event) {
+        let value = event.target.value * 1
+        if (isNaN(value) || value < 1) {
+          this.skuNum = 1
+        }
+        else {
+          this.skuNum = parseInt(value)
+        }
+      },
+      async addShopCar() {
+        try {
+          await this.$store.dispatch(
+              'detail/addOrUpdateShopCart',
+              {skuId: this.$route.params.skuid, skuNum: this.skuNum})
+          sessionStorage.setItem("SKUINFO", JSON.stringify(this.skuInfo))
+          this.$router.push({
+            name: 'addcartsuccess',
+            query: {
+              skuNum: this.skuNum
+            }
+          })
+        } catch (error) {
+          alert(error.message)
+        }
       }
     }
   }
