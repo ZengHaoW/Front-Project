@@ -1,5 +1,5 @@
 //shopcart的小仓库
-import {reqCartList} from "@/api";
+import {reqCartList, reqDeletCartById, reqUpdateCheckedByid} from "@/api";
 
 export default {
     namespaced: true,
@@ -10,7 +10,25 @@ export default {
             if (result.code === 200) {
                 commit('GETCARTLIST', result.data)
             }
-        }
+        },
+        async deleteCartById({commit}, skuId) {
+            let result = await reqDeletCartById(skuId)
+            // console.log(result)
+            if (result.code === 200) {
+                return "ok"
+            }
+            else {
+                return Promise.reject(new Error('failed'))
+            }
+        },
+        async updateCheckedById({ commit }, { skuId, isChecked }) {
+            let result = await reqUpdateCheckedByid(skuId, isChecked);
+            if (result.code == 200) {
+                return "ok";
+            } else {
+                return Promise.reject(new Error("faile"));
+            }
+        },
 
     },
     mutations: {

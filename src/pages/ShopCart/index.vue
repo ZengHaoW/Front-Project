@@ -13,7 +13,10 @@
       <div class="cart-body">
         <ul class="cart-list" v-for="(cart, index) in carInfoList" :key="cart.id">
           <li class="cart-list-con1">
-            <input type="checkbox" name="chk_list" :checked="cart.isChecked === 1">
+            <input type="checkbox" name="chk_list"
+                   :checked="cart.isChecked === 1"
+                   @click="updateChecked(cart, $event)"
+            >
           </li>
           <li class="cart-list-con2">
             <img :src="cart.imgUrl">
@@ -23,15 +26,15 @@
             <span class="price">{{cart.cartPrice}}</span>
           </li>
           <li class="cart-list-con5">
-            <a href="javascript:void(0)" class="mins">-</a>
-            <input autocomplete="off" type="text" minnum="1" class="itxt" :value="cart.skuNum">
-            <a href="javascript:void(0)" class="plus">+</a>
+            <a href="javascript:void(0)" class="mins" @click="handler('minus', -1, cart)">-</a>
+            <input autocomplete="off" type="text" minnum="1" class="itxt" :value="cart.skuNum" @change="handler('change', $event.target.value * 1, cart)">
+            <a href="javascript:void(0)" class="plus" @click="handler('add', 1, cart)">+</a>
           </li>
           <li class="cart-list-con6">
             <span class="sum">{{cart.skuNum * cart.cartPrice}}</span>
           </li>
           <li class="cart-list-con7">
-            <a href="#none" class="sindelet">删除</a>
+            <a class="sindelet" @click="deleteCartById(cart)">删除</a>
             <br>
             <a href="#none">移到收藏</a>
           </li>
@@ -67,13 +70,88 @@
 
 <script>
 import {mapGetters} from "vuex";
-
+import throttle from "lodash/throttle";
 export default {
   name: 'ShopCart',
   methods: {
     getData() {
       this.$store.dispatch('shopcart/getCartList')
+    },
+    //修改某个产品的个数
+    // async handler(type, disNum, cart) {
+    //   // console.log(type, disNum)
+    //   switch(type) {
+    //     case "add":
+    //       disNum = 1
+    //       break
+    //     case "minus":
+    //       if (cart.skuNum > 1) {
+    //         disNum = -1
+    //       }
+    //       else {
+    //         disNum = 0
+    //       }
+    //       break
+    //     case "change":
+    //       if (isNaN(disNum) || disNum < 1) {
+    //         disNum = 0
+    //       }
+    //       else {
+    //         disNum = parseInt(disNum) - cart.skuNum
+    //       }
+    //   }
+    //   try {
+    //     await this.$store.dispatch('detail/addOrUpdateShopCart', {skuId: cart.skuId, skuNum: disNum})
+    //     this.getData()
+    //   }catch (error) {
+    //
+    //   }
+    // },
+    async deleteCartById(cart) {
+      try{
+        await this.$store.dispatch('shopcart/deleteCartById', cart.skuId)
+        this.getData()
+      } catch (error) {
+        alert(error.message)
+      }
+    },
+    handler: throttle(async function (type, disNum, cart) {
+      // console.log(type, disNum)
+      switch(type) {
+        case "add":
+          disNum = 1
+          break
+        case "minus":
+          disNum = cart.skuNum > 1 ? -1 : 0;
+          break
+        case "change":
+          if (isNaN(disNum) || disNum < 1) {
+            disNum = 0
+          }
+          else {
+            disNum = parseInt(disNum) - cart.skuNum
+          }
+      }
+      console.log(type, disNum, cart.skuNum)
+      try {
+        await this.$store.dispatch('detail/addOrUpdateShopCart', {skuId: cart.skuId, skuNum: disNum})
+        this.getData()
+      }catch (error) {
+
+      }
+    }, 1000),
+
+    async updateChecked(cart, event) {
+      let isChecked = event.target.checked? "1": "0"
+      try {
+        await this.$store.dispatch('shopcart/updateCheckedById',
+            {skuId: cart.skuId, isChecked})
+        this.getData()
+      } catch (error) {
+        alert(error.message)
+      }
     }
+
   },
   computed: {
     ...mapGetters('shopcart', ['cartList']),
