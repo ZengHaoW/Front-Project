@@ -1,4 +1,4 @@
-import {reqGetCode, reqUserRegister} from "@/api";
+import {reqGetCode, reqUserRegister, reqUserLogin} from "@/api";
 
 
 export default {
@@ -23,14 +23,34 @@ export default {
                 return Promise.reject(new Error('failed'))
             }
         },
+        //登录
+        async userLogin({ commit }, data) {
+            let result = await reqUserLogin(data);
+            console.log(result)
+            //服务器下发token，用户唯一标识符(uuid)
+            //将来经常通过带token找服务器要用户信息进行展示
+            if (result.code == 200) {
+                //用户已经登录成功且获取到token
+                commit("USERLOGIN", result.data.token);
+                //持久化存储token
+                // setToken(result.data.token);
+                return "ok";
+            } else {
+                return Promise.reject(new Error("faile"));
+            }
+        },
     },
     mutations: {
         GETCODE(state, code) {
             state.code = code
-        }
+        },
+        USERLOGIN(state, token) {
+            state.token = token;
+        },
     },
     state: {
-        code: ''
+        code: '',
+        token: ''
     },
     //简化仓库数据
     getters: {

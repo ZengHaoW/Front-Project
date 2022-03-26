@@ -54,4 +54,8 @@ export const reqUserRegister = (data) => requests({
     method:'post'
 })
 
-//url:'/user/passport/register',data,method:'post'
+export const reqUserLogin = (data)=>requests({
+    url:'/user/passport/login',
+    data,
+    method:'post'
+});
