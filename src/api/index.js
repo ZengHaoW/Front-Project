@@ -7,11 +7,11 @@ export const reqCategoryList = () => requests(
 )
 
 
-export const reqBannerList= () => mockRequests(
+export const reqBannerList = () => mockRequests(
     {url: '/banner', method: 'get'}
 )
 
-export const reqFloorList= () => mockRequests(
+export const reqFloorList = () => mockRequests(
     {url: '/floor', method: 'get'}
 )
 //params至少是一个空对象
@@ -41,7 +41,10 @@ export const reqDeletCartById = (skuId) => requests({
     method: 'delete'
 })
 
-export const reqUpdateCheckedByid = (skuId,isChecked)=>requests({url:`/cart/checkCart/${skuId}/${isChecked}`,method:'get'});
+export const reqUpdateCheckedByid = (skuId, isChecked) => requests({
+    url: `/cart/checkCart/${skuId}/${isChecked}`,
+    method: 'get'
+});
 
 export const reqGetCode = (phone) => requests({
     url: `/user/passport/sendCode/${phone}`,
@@ -49,13 +52,23 @@ export const reqGetCode = (phone) => requests({
 })
 
 export const reqUserRegister = (data) => requests({
-    url:'/user/passport/register',
+    url: '/user/passport/register',
     data,
-    method:'post'
+    method: 'post'
 })
 
-export const reqUserLogin = (data)=>requests({
-    url:'/user/passport/login',
+export const reqUserLogin = (data) => requests({
+    url: '/user/passport/login',
     data,
-    method:'post'
+    method: 'post'
 });
+
+export const reqUserInfo = () => requests({
+    url: '/user/passport/auth/getUserInfo',
+    methods: 'get',
+})
+
+export const reqLogout = () => requests({
+    url: 'user/passport/logout',
+    method: 'get',
+})

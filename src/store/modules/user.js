@@ -1,5 +1,7 @@
-import {reqGetCode, reqUserRegister, reqUserLogin} from "@/api";
-
+import {
+    reqGetCode, reqUserRegister, reqUserLogin, reqUserInfo,reqLogout
+} from "@/api";
+import {setToken} from '@/utils/token'
 
 export default {
     namespaced: true,
@@ -32,13 +34,37 @@ export default {
             if (result.code == 200) {
                 //用户已经登录成功且获取到token
                 commit("USERLOGIN", result.data.token);
-                //持久化存储token
-                // setToken(result.data.token);
+                // 持久化存储token
+                setToken(result.data.token);
                 return "ok";
             } else {
                 return Promise.reject(new Error("faile"));
             }
         },
+        //获取用户信息
+        async getUserInfo({commit}) {
+            let result = await reqUserInfo()
+            console.log(result)
+            if (result.code === 200) {
+                commit("GETUSERINFO", result.data)
+
+                return "ok"
+            }else {
+                return  Promise.reject(new Error('faile'))
+            }
+        },
+        //用户登出
+        async userLogout({commit}) {
+            let result = await reqLogout()
+            // console.log(result)
+            if (result.code === 200) {
+                commit("CLEAR")
+                return "ok"
+            }else {
+                return  Promise.reject(new Error('faile'))
+            }
+        }
+
     },
     mutations: {
         GETCODE(state, code) {
@@ -47,10 +73,20 @@ export default {
         USERLOGIN(state, token) {
             state.token = token;
         },
+        GETUSERINFO(state, userInfo) {
+            state.userInfo = userInfo
+        },
+        CLEAR(state) {
+            state.token = ''
+            state.userInfo = {}
+            localStorage.removeItem("TOKEN")
+        }
     },
     state: {
         code: '',
-        token: ''
+        token: localStorage.getItem("TOKEN"),
+        userInfo: {},
+
     },
     //简化仓库数据
     getters: {
