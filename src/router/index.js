@@ -20,7 +20,7 @@ router.beforeEach(async (to, from, next) => {
     //from：获取到从哪个路由跳转过来来的信息
     //next: next() 放行  next(path) 放行
     //方便测试 统一放行
-    //  next();
+    // next();
     //获取仓库中的token-----可以确定用户是登录了
     let token  = store.state.user.token;
     let name = store.state.user.userInfo.name;
@@ -38,11 +38,11 @@ router.beforeEach(async (to, from, next) => {
                 //登陆了且没有用户信息
                 //在路由跳转之前获取用户信息且放行
                 try {
-                    await store.dispatch('getUserInfo');
+                    await store.dispatch('user/getUserInfo');
                     next();
                 } catch (error) {
                     //token失效从新登录
-                    await store.dispatch('userLogout');
+                    await store.dispatch('user/userLogout');
                     next('/login')
                 }
             }

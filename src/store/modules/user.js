@@ -18,7 +18,7 @@ export default {
         },
         async UserRegister({commit}, user) {
             let result = await reqUserRegister(user)
-            console.log(result)
+            // console.log(result)
             if (result.code === 200) {
                 return 'ok'
             } else {
@@ -28,7 +28,7 @@ export default {
         //登录
         async userLogin({ commit }, data) {
             let result = await reqUserLogin(data);
-            console.log(result)
+            // console.log(result)
             //服务器下发token，用户唯一标识符(uuid)
             //将来经常通过带token找服务器要用户信息进行展示
             if (result.code == 200) {
@@ -44,7 +44,7 @@ export default {
         //获取用户信息
         async getUserInfo({commit}) {
             let result = await reqUserInfo()
-            console.log(result)
+            // console.log(result)
             if (result.code === 200) {
                 commit("GETUSERINFO", result.data)
 
